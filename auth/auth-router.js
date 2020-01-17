@@ -3,6 +3,7 @@ const express = require("express")
 const usersModel = require("../users/users-model")
 
 const router = express.Router()
+const tokens = {}
 
 router.post("/register", async (req, res, next) => {
   try {
@@ -24,7 +25,13 @@ router.post("/login", async (req, res, next) => {
     const passwordValid = await bcrypt.compare(password, user.password)
 
     if (user && passwordValid) {
+      const token = Math.random()
+
+      tokens[token] = user
+      console.log(tokens)
+
       res.status(200).json({
+        token: token,
         message: `Welcome ${user.username}!`,
       })
     } else {
@@ -39,6 +46,11 @@ router.post("/login", async (req, res, next) => {
 
 router.get("/protected", async (req, res, next) => {
   try {
+    const { token } = req.headers
+
+    if(!token || !tokens[token]) {
+      return res.status(403).json({ message: `You are not authorized.`})
+    }
     res.json({
       message: "You are authorized",
     })
