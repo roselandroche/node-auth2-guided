@@ -2,7 +2,9 @@ const express = require("express")
 const helmet = require("helmet")
 const cors = require("cors")
 const session = require("express-session")
+const KnexSessionStore = require("connect-session-knex")(session)
 
+const dbConfig = require("./database/dbConfig")
 const authRouter = require("./auth/auth-router")
 const usersRouter = require("./users/users-router")
 
@@ -20,7 +22,11 @@ server.use(session({
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
     secure: false,
-  }
+  },
+  store: new KnexSessionStore({
+    knex: dbConfig,
+    createtable: true,
+  })
 }))
 
 server.use("/auth", authRouter)
