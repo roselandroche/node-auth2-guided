@@ -16,6 +16,11 @@ server.use(session({
   resave: false,
   saveUninitialized: false,
   secret: "keep it secret, keep it safe",
+  cookie: {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+    secure: false,
+  }
 }))
 
 server.use("/auth", authRouter)
